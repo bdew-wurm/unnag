@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+}
+
+group = 'net.bdew.wurm'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url = uri('https://gotti.no-ip.org/maven/repository')
+    }
+}
+
+dependencies {
+    implementation 'org.gotti.wurmunlimited:client-modlauncher:0.14'
+    implementation 'org.gotti.wurmunlimited:client:3721782'
+    implementation 'org.gotti.wurmunlimited:common-client:3721782'
+}
+
+tasks.named('jar') {
+    archiveFileName.set("${project.name}.jar")
+    manifest {
+        attributes(
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+        )
+    }
+}
+
+tasks.register('dist', Zip) {
+    into('mods') {
+        into(project.name) {
+            from(tasks.named('jar'))
+        }
+        from(fileTree(dir: 'mods', include: '*'))
+    }
+
+    archiveFileName.set("${project.name}-${project.version}.zip")
+}
